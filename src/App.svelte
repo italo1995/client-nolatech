@@ -7,21 +7,28 @@
     import { User } from "@/libs/user";
     import '@/style/global.scss'
     import { Styles } from 'sveltestrap';
-    import { getSocket } from "@/libs/ws"
     const router = createRouter({ routes })
 </script>
 <script lang="ts">
+
+let isAuthenticated = false;
+
   onMount(async () => {
-    getSocket();
-  })
-  User.authenticate();
-  const pag = window.location.pathname
-  const origin = window.location.origin
-  if (!$User && pag !== '/' && pag !== 'index') {
-    $goto(origin)
-  }
-  if ($User && (pag === '/' || pag === 'login')) {
-    $goto(`${origin}/Home`)
+    await User.authenticate();
+    isAuthenticated = $User !== false;
+    handleNavigation();
+  });
+
+  const pag = window.location.pathname;
+  const origin = window.location.origin;
+
+  function handleNavigation() {
+    if (!isAuthenticated && pag !== '/' && pag !== 'index') {
+      $goto(origin);
+    }
+    if (isAuthenticated && (pag === '/' || pag === 'login')) {
+      $goto(`${origin}/Home`);
+    }
   }
 </script>
 <Header />

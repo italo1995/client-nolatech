@@ -50,7 +50,7 @@
           dismissible: true,
         }
         addToast(dataToast)
-        handleSubmit(resp.data.user, resp.data.token)
+        handleSubmit(resp.data, resp.data.token)
       } else {
         if (resp.data.user === null) {
           const dataToast = {

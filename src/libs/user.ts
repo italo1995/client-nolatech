@@ -3,29 +3,34 @@ import request from "./request";
 
 const user: boolean | any = writable(false)
 const token: boolean | any = writable(false)
-const socketId: boolean | any = writable(false)
 const req = new request()
 
 user.authenticate = async function (){
   const data = parseUser (localStorage.getItem("user"));
-  // const token = localStorage.getItem("token");
-  let socketIdText = ''
-  SocketId.subscribe(value => {
-		socketIdText = value;
-	});
-  
-  if (data !== undefined && !socketIdText) {
+  if (data !== undefined) {
     const dataUser = await req.get('auth/me')
-    user.set(dataUser);
+    let userData
+    if (dataUser.user) {
+      userData = dataUser.user
+    } else {
+      userData = dataUser
+    }
+    user.set(userData);
   }
 }
 
 user.login = function (data, tokenUser) {
-  localStorage.setItem("user", parseUser(data));
-  user.set(data);
+  let userData;
+  if (data.user) {
+    userData = data.user;
+  } else {
+    userData = data;
+  }
+  localStorage.setItem("user", parseUser(userData));
   localStorage.setItem("token", tokenUser);
+  user.set(userData);
   token.set(tokenUser);
-}
+};
 
 user.logout = function () {
   localStorage.removeItem('user')
@@ -47,4 +52,3 @@ const parseUser = (user) => {
 }
 export const User = user
 export const Token = token
-export const SocketId = socketId

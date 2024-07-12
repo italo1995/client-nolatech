@@ -18,6 +18,7 @@
     maxlength="255"
     class="input-field"
     placeholder="{placeholder}"
+    value="{value}"
     on:input={handleInput}
     required
   />

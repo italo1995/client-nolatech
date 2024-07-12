@@ -22,23 +22,25 @@ export default class request {
     const response = await fetch(`${this.domain}/${url}`, headersOptions);
     if (response.ok) {
       let json = await response.json();
+      console.log('json :>> ', json);
       return json.data;
     } else {
+      console.log('el error esta aca get');
       this.handleErrorResponse(response);
     }
   }
 
-  private formDataToObject(formElm: HTMLFormElement) {
-    var result: any = {};
-    var values = formElm.values();
-    var keys = formElm.keys();
-    var key;
+  // private formDataToObject(formElm: HTMLFormElement) {
+  //   var result: any = {};
+  //   var values = formElm.values();
+  //   var keys = formElm.keys();
+  //   var key;
 
-    while (!(key = keys.next()).done) {
-      result[key.value] = values.next().value;
-    }
-    return result;
-  }
+  //   while (!(key = keys.next()).done) {
+  //     result[key.value] = values.next().value;
+  //   }
+  //   return result;
+  // }
 
   public async post(url: string, data: FormData) {
     const body = JSON.stringify(Object.fromEntries(data.entries()));
@@ -72,6 +74,45 @@ export default class request {
         this.handleErrorResponse(response);
       }
     } catch (error) {
+      console.log('aca esta el error post');
+      this.handleError(error);
+    }
+  }
+
+  public async pacth(url: string, data: FormData) {
+    const body = JSON.stringify(Object.fromEntries(data.entries()));
+    const token = localStorage.getItem('token');
+    let headersOptions: any = {
+      method: 'PATCH',
+      headers: {
+        "Accept": "*/*",
+        "Content-Type": "application/json"
+      },
+      body: body,
+    };
+
+    if (token) {
+      headersOptions = {
+        method: 'PATCH',
+        headers: {
+          "Authorization": `bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: body,
+      };
+    }
+
+    try {
+      const response = await fetch(`${this.domain}/${url}`, headersOptions);
+      if (response.ok) {
+        console.log('response :>> ', response);
+        let json = await response.json();
+        return json;
+      } else {
+        this.handleErrorResponse(response);
+      }
+    } catch (error) {
+      console.log('aca esta el error post');
       this.handleError(error);
     }
   }
@@ -87,13 +128,15 @@ export default class request {
 
     try {
       const response = await fetch(`${this.domain}/${url}`, headersOptions);
-      if (response.ok) {
-        let json = await response.json();
-        return json;
-      } else {
+      console.log('response :>> ', response);
+      if (!response.ok) {
+        console.log('aca esta el error delete');
         this.handleErrorResponse(response);
+      } else {
+        return true;
       }
     } catch (error) {
+      console.log('aca esta el error delete c');
       this.handleError(error);
     }
   }
